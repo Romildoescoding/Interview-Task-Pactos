@@ -3,7 +3,7 @@ import { productsTable } from "../airtable.js";
 
 const router = express.Router();
 
-// Get all products
+// All products
 router.get("/", async (req, res) => {
   console.log("Get products");
   try {
@@ -22,6 +22,7 @@ router.get("/", async (req, res) => {
   }
 });
 
+//Particular Product with params id :D
 router.get("/:id", async (req, res) => {
   const { id } = req.params;
   console.log(`Fetching product with ID: ${id}`);
@@ -44,15 +45,43 @@ router.get("/:id", async (req, res) => {
   }
 });
 
-// Add a new product
+// User specific orders so that i can list them in the Listed Products
+router.get("/user/:email", async (req, res) => {
+  const { email } = req.params;
+  console.log(`Fetching products for user: ${email}`);
+
+  try {
+    const records = await productsTable
+      .select({
+        filterByFormula: `UploaderEmail="${email}"`,
+      })
+      .all();
+
+    const userProducts = records.map((record) => ({
+      id: record.id,
+      ...record.fields,
+    }));
+
+    console.log("User products:", userProducts);
+    res.json(userProducts);
+  } catch (error) {
+    console.error("Error fetching user products:", error);
+    res
+      .status(500)
+      .json({ message: "Error fetching user products", error: error.message });
+  }
+});
+
+// Add new product page one...
 router.post("/", async (req, res) => {
   try {
-    const { name, description, price, imageUrl } = req.body;
+    const { Name, Description, Price, ImageUrl, UploaderEmail } = req.body;
     const newProduct = await productsTable.create({
-      name,
-      description,
-      price: Number.parseFloat(price),
-      imageUrl,
+      Name,
+      Description,
+      Price: Number.parseFloat(Price),
+      ImageUrl,
+      UploaderEmail,
     });
     res.status(201).json({ id: newProduct.id, ...newProduct.fields });
   } catch (error) {
@@ -62,7 +91,7 @@ router.post("/", async (req, res) => {
   }
 });
 
-// Update a product
+// Edit product
 router.put("/:id", async (req, res) => {
   try {
     const { id } = req.params;
@@ -82,7 +111,7 @@ router.put("/:id", async (req, res) => {
   }
 });
 
-// Delete a product
+// Delete that product :)
 router.delete("/:id", async (req, res) => {
   try {
     const { id } = req.params;

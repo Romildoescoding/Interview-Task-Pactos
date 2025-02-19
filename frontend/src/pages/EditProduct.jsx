@@ -2,7 +2,8 @@
 
 import { useState, useEffect } from "react";
 import axios from "axios";
-import { useParams, useHistory } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { Loader } from "lucide-react";
 
 function EditProduct() {
   const [product, setProduct] = useState({
@@ -12,8 +13,10 @@ function EditProduct() {
     ImageUrl: "",
   });
 
+  const [isLoading, setIsLoading] = useState(false);
+
   const { id } = useParams();
-  const history = useHistory();
+  const navigate = useNavigate();
 
   useEffect(() => {
     fetchProduct();
@@ -21,12 +24,15 @@ function EditProduct() {
 
   const fetchProduct = async () => {
     try {
+      setIsLoading(true);
       const response = await axios.get(
         `http://localhost:5000/api/products/${id}`
       );
       setProduct(response.data);
     } catch (error) {
       console.error("Error fetching product:", error);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -42,39 +48,53 @@ function EditProduct() {
     e.preventDefault();
     try {
       await axios.put(`http://localhost:5000/api/products/${id}`, product);
-      history.push("/");
+      navigate("/user-products");
     } catch (error) {
       console.error("Error updating product:", error);
     }
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">Edit Product</h1>
-      <form onSubmit={handleSubmit} className="max-w-md">
-        {["Name", "Description", "Price", "ImageUrl"].map((field) => (
-          <div className="mb-4" key={field}>
-            <label htmlFor={field} className="block mb-2">
-              {field}
-            </label>
-            <input
-              type={field === "Price" ? "number" : "text"}
-              id={field}
-              name={field}
-              value={product[field] || ""}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded"
-              required
-            />
-          </div>
-        ))}
-        <button
-          type="submit"
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-        >
-          Update Product
-        </button>
-      </form>
+    <div className="min-h-[calc(100vh-80px)] flex items-center justify-center bg-gray-100 p-6">
+      {isLoading ? (
+        <Loader
+          className="fixed top-1/2 left-1/2 -translate-y-1/2 -translate-x-1/2 animate-spin"
+          size={32}
+        />
+      ) : (
+        <div className="bg-white p-6 rounded-lg shadow-lg w-full max-w-lg">
+          <h1 className="text-2xl text-center font-bold text-black mb-6">
+            Edit Product
+          </h1>
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {["Name", "Description", "Price", "ImageUrl"].map((field) => (
+              <div key={field}>
+                <label
+                  htmlFor={field}
+                  className="block font-medium text-gray-700"
+                >
+                  {field}
+                </label>
+                <input
+                  type={field === "Price" ? "number" : "text"}
+                  id={field}
+                  name={field}
+                  value={product[field] || ""}
+                  onChange={handleChange}
+                  className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-black"
+                  required
+                />
+              </div>
+            ))}
+            <button
+              type="submit"
+              className="w-full cursor-pointer bg-black text-white px-4 py-2 rounded-md hover:bg-zinc-800 transition duration-300"
+            >
+              Update Product
+            </button>
+          </form>
+        </div>
+      )}
     </div>
   );
 }

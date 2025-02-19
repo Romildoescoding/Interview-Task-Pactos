@@ -1,23 +1,32 @@
-import { BrowserRouter as Router, Route, Switch } from "react-router-dom";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
+import UserProfile from "./components/UserProfile";
 import Home from "./pages/Home";
 import AddProduct from "./pages/AddProduct";
 import EditProduct from "./pages/EditProduct";
 import Orders from "./pages/Orders";
+import LandingPage from "./pages/LandingPage";
+import { UserProvider } from "./context/UserContext";
+import UserProducts from "./pages/UserProducts";
 
 function App() {
   return (
-    <Router>
-      <div className="App">
-        <Navbar />
-        <Switch>
-          <Route exact path="/" component={Home} />
-          <Route path="/add-product" component={AddProduct} />
-          <Route path="/edit-product/:id" component={EditProduct} />
-          <Route path="/orders" component={Orders} />
-        </Switch>
-      </div>
-    </Router>
+    <UserProvider>
+      <Router>
+        <div className="App">
+          <Navbar />
+          <Routes>
+            <Route path="/" element={<LandingPage />} />
+            <Route path="/home" element={<Home />} />
+            <Route path="/add-product" element={<AddProduct />} />
+            <Route path="/user-products" element={<UserProducts />} />
+            <Route path="/edit-product/:id" element={<EditProduct />} />
+            <Route path="/orders" element={<Orders />} />
+          </Routes>
+          <UserProfile />
+        </div>
+      </Router>
+    </UserProvider>
   );
 }
 
