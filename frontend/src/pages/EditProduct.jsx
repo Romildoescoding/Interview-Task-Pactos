@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import { Loader } from "lucide-react";
+import { backendUrl } from "../backendUrl";
 
 function EditProduct() {
   const [product, setProduct] = useState({
@@ -25,9 +26,7 @@ function EditProduct() {
   const fetchProduct = async () => {
     try {
       setIsLoading(true);
-      const response = await axios.get(
-        `http://localhost:5000/api/products/${id}`
-      );
+      const response = await axios.get(`${backendUrl}/api/products/${id}`);
       setProduct(response.data);
     } catch (error) {
       console.error("Error fetching product:", error);
@@ -47,7 +46,7 @@ function EditProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.put(`http://localhost:5000/api/products/${id}`, product);
+      await axios.put(`${backendUrl}/api/products/${id}`, product);
       navigate("/user-products");
     } catch (error) {
       console.error("Error updating product:", error);

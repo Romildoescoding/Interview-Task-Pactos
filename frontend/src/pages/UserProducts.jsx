@@ -5,6 +5,7 @@ import axios from "axios";
 import ProductCard from "../components/ProductCard";
 import { Loader } from "lucide-react";
 import { useUser } from "../context/UserContext";
+import { backendUrl } from "../backendUrl";
 
 const UserProducts = () => {
   const [products, setProducts] = useState([]);
@@ -21,7 +22,7 @@ const UserProducts = () => {
     setIsLoading(true);
     try {
       const response = await axios.get(
-        `http://localhost:5000/api/products/user/${userEmail}`
+        `${backendUrl}/api/products/user/${userEmail}`
       );
       setProducts(response.data);
     } catch (error) {

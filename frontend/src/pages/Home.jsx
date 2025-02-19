@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import ProductCard from "../components/ProductCard";
 import { Loader } from "lucide-react";
+import { backendUrl } from "../backendUrl";
 
 function Home() {
   const [products, setProducts] = useState([]);
@@ -25,7 +26,7 @@ function Home() {
   const fetchProducts = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get("http://localhost:5000/api/products");
+      const response = await axios.get(`${backendUrl}/api/products`);
       setProducts(response.data);
       setFilteredProducts(response.data);
     } catch (error) {

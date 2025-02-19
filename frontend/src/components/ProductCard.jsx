@@ -3,13 +3,14 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 import { Trash, Pencil, X, MapPin, Loader } from "lucide-react";
 import { useUser } from "../context/UserContext";
+import { backendUrl } from "../backendUrl";
 
 function ProductCard({ product, onDelete }) {
   const [quantity, setQuantity] = useState(1);
   const { userEmail, userName } = useUser();
   const [isOrderPlaced, setIsOrderPlaced] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [isHovered, setIsHovered] = useState(false);
+  // const [isHovered, setIsHovered] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
   const navigate = useNavigate();
@@ -18,7 +19,7 @@ function ProductCard({ product, onDelete }) {
     setIsLoading(true);
     if (!userEmail) return navigate("/");
     try {
-      const response = await axios.post("http://localhost:5000/api/orders", {
+      const response = await axios.post(`${backendUrl}/api/orders`, {
         ProductId: product.id,
         BuyerName: userName,
         BuyerEmail: userEmail,
@@ -38,7 +39,7 @@ function ProductCard({ product, onDelete }) {
   const handleDelete = async () => {
     setIsDeleting(true);
     try {
-      await axios.delete(`http://localhost:5000/api/products/${product.id}`);
+      await axios.delete(`${backendUrl}/api/products/${product.id}`);
       onDelete();
     } catch (error) {
       console.error("Error deleting product:", error);
@@ -50,8 +51,8 @@ function ProductCard({ product, onDelete }) {
   return (
     <div
       className="relative bg-white shadow-md rounded-lg p-5 border border-gray-200 transition duration-300 hover:shadow-lg"
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={() => setIsHovered(false)}
+      // onMouseEnter={() => setIsHovered(true)}
+      // onMouseLeave={() => setIsHovered(false)}
     >
       {confirmDelete && (
         <>
@@ -150,7 +151,7 @@ function ProductCard({ product, onDelete }) {
           className="w-full h-48 object-contain border-2 border-zinc-100 rounded-xl"
         />
 
-        {isHovered && userEmail === product.UploaderEmail && (
+        {userEmail === product.UploaderEmail && (
           <Link
             to={`/edit-product/${product.id}`}
             className="absolute top-0 right-0 bg-black text-white p-2 rounded-full transition-transform transform hover:scale-105"

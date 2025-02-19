@@ -4,6 +4,7 @@ import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import { useUser } from "../context/UserContext";
+import { backendUrl } from "../backendUrl";
 
 function AddProduct() {
   const { userEmail } = useUser();
@@ -24,7 +25,7 @@ function AddProduct() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      await axios.post("http://localhost:5000/api/products", product);
+      await axios.post(`${backendUrl}/api/products`, product);
       navigate("/home");
     } catch (error) {
       console.error("Error adding product:", error);

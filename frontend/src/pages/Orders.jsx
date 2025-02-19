@@ -4,6 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { useUser } from "../context/UserContext";
 import { Loader, List, Grid } from "lucide-react";
+import { backendUrl } from "../backendUrl";
 
 function OrdersPage() {
   const { userEmail } = useUser();
@@ -19,7 +20,7 @@ function OrdersPage() {
     try {
       setIsLoading(true);
       const response = await axios.get(
-        `http://localhost:5000/api/orders?email=${userEmail}`
+        `${backendUrl}/api/orders?email=${userEmail}`
       );
       setOrders(response.data);
       console.log(response.data);
@@ -64,7 +65,7 @@ function OrdersPage() {
           {orders.length > 0 ? (
             orders.map((order) => (
               <div
-                key={order.OrderId}
+                key={order.id}
                 className="bg-zinc-50 p-6 rounded-lg shadow-lg flex items-center gap-6"
               >
                 <img
