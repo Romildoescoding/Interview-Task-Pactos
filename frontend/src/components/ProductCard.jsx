@@ -40,11 +40,10 @@ function ProductCard({ product, onDelete }) {
     setIsDeleting(true);
     try {
       await axios.delete(`${backendUrl}/api/products/${product.id}`);
+      setIsDeleting(false);
       onDelete();
     } catch (error) {
       console.error("Error deleting product:", error);
-    } finally {
-      setIsDeleting(false);
     }
   };
 
